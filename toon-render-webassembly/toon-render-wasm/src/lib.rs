@@ -49,6 +49,15 @@ mod wasm {
         super::render(toon_spec, state_json).map_err(|e| JsError::new(&e.to_string()))
     }
 
+    /// The JSON a TOON spec decodes to (pretty-printed) — the 1:1 form of
+    /// the same data, before adaptation. Lets a UI show the TOON⇄JSON diff.
+    #[wasm_bindgen]
+    pub fn to_json(toon_spec: &str) -> Result<String, JsError> {
+        use toon_wasm::options::ConvOptions;
+        toon_wasm::toon_to_json(toon_spec, &ConvOptions::default())
+            .map_err(|e| JsError::new(&e.to_string()))
+    }
+
     /// Parse + adapt a TOON spec once, then render it against different
     /// state values. Bindings embedded in an indirected spec are resolved
     /// at construction; `render(state)` supplies state for any residual

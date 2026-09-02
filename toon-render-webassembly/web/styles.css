@@ -53,6 +53,9 @@ main {
 
 .stat { font-weight: 400; text-transform: none; letter-spacing: 0; color: #5c6473; }
 
+.pane h2.sub-head { margin-top: 12px; }
+.dim { font-weight: 400; text-transform: none; letter-spacing: 0; color: #5c6473; }
+
 textarea, iframe {
   flex: 1; min-height: 0; width: 100%;
   border: 1px solid var(--border); border-radius: 8px;

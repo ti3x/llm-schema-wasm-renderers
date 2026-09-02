@@ -1,17 +1,20 @@
 // toon → html playground. One WebAssembly module does the whole pipeline:
 // TOON → JSON UI spec → (adapt json-render.dev form) → HTML.
-import init, { compile } from "./pkg/toon_render_wasm.js";
+import init, { compile, to_json } from "./pkg/toon_render_wasm.js";
 
 const $ = (id) => document.getElementById(id);
 const toonEl = $("toon");
+const jsonEl = $("json");
 const htmlEl = $("html");
 const preview = $("preview");
 const errEl = $("err");
 const presetEl = $("preset");
 const statToon = $("stat-toon");
+const statJson = $("stat-json");
 const statHtml = $("stat-html");
 
-const fmt = new Intl.NumberFormat();
+const nf = new Intl.NumberFormat();
+const fmt = (n) => nf.format(n);
 const approxTokens = (s) => Math.ceil(s.length / 4);
 
 // TOON presets (generated from JSON via toon-wasm, so they decode cleanly).
@@ -85,13 +88,29 @@ function frame(html) {
 
 function run() {
   const toon = toonEl.value;
-  statToon.textContent = `${fmt.format(toon.length)} chars · ~${fmt.format(approxTokens(toon))} tokens`;
+  const toonTok = approxTokens(toon);
+  statToon.textContent = `${fmt(toon.length)} chars · ~${fmt(toonTok)} tokens`;
   try {
+    // 1:1 decode of the TOON — the JSON the pipeline consumes.
+    const json = to_json(toon);
+    jsonEl.value = json;
+    const jsonTok = approxTokens(json);
+    const saved = jsonTok > 0 ? Math.round((1 - toonTok / jsonTok) * 100) : 0;
+    const diff =
+      saved > 0
+        ? `TOON is ${saved}% smaller`
+        : saved < 0
+          ? `TOON is ${-saved}% larger`
+          : "same size";
+    statJson.textContent = `${fmt(json.length)} chars · ~${fmt(jsonTok)} tokens · ${diff}`;
+
+    // Render the HTML from the same TOON.
     const html = compile(toon, "");
-    errEl.hidden = true;
     htmlEl.value = html;
-    statHtml.textContent = `${fmt.format(html.length)} chars`;
+    statHtml.textContent = `${fmt(html.length)} chars`;
     preview.srcdoc = frame(html);
+
+    errEl.hidden = true;
   } catch (e) {
     errEl.hidden = false;
     errEl.textContent = String(e.message ?? e);
