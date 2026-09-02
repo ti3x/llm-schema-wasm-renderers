@@ -1,0 +1,8 @@
+# Build artifacts are regenerated inside the image.
+**/target/
+**/web/pkg/
+
+# VCS / docs / editor cruft — not needed to build or serve.
+.git/
+docs/
+**/.claude/

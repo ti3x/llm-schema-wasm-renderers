@@ -45,33 +45,46 @@ cargo install wasm-bindgen-cli
 > version**. If a build reports a schema-version mismatch, align them, e.g.
 > `cargo update -p wasm-bindgen --precise <cli-version>` in that project.
 
-## Run a playground
+## Run the playgrounds (Docker)
 
-Every sub-project has a `build.sh` that compiles the crate and stages the WASM
-into its own `web/pkg/`, and a `web/` folder with the playground. The pattern is
-identical for all four — build, then serve `web/` over HTTP (WASM modules can't
-be loaded from a `file://` URL):
+A `Dockerfile` + `Makefile` package the whole toolchain, build every project's
+WASM, and serve all four playgrounds at once — each on its own port. You only
+need Docker installed.
+
+```bash
+make build        # build the image: deps + all WASM compiled (first run is slow)
+make playground   # launch all four playgrounds; Ctrl-C to stop
+```
+
+Then open, each in a browser:
+
+| Port | Project | What you'll see |
+|------|---------|-----------------|
+| **[8000](http://localhost:8000/)** | `toon-render-webassembly` | Edit TOON → live HTML + preview, via one WASM module. Shows the JSON decoded from TOON under the editor with the TOON⇄JSON size diff. Presets for the flat and json-render.dev forms. |
+| **[8001](http://localhost:8001/)** | `toon-webassembly` | JSON ⇄ TOON converter with token stats. Also [`/combo.html`](http://localhost:8001/combo.html) — the original two-module TOON → JSON → HTML demo. |
+| **[8002](http://localhost:8002/)** | `json-render-webassembly` | Edit a JSON UI spec + state → live HTML, with two savings comparisons (spec-only vs spec+state) against the generated HTML. |
+| **[8003](http://localhost:8003/)** | `pug-webassembly` | Edit a Pug template → live HTML, with two savings comparisons (template-only vs template+data). Also [`/combo.html`](http://localhost:8003/combo.html). |
+
+Other targets: `make stop` (remove the running container), `make clean` (also
+remove the image), `make help` (list targets).
+
+> The servers send `Cache-Control: no-store`, so after a `make build` a normal
+> browser refresh always picks up the rebuilt assets.
+
+<details>
+<summary>Run a single playground without Docker</summary>
+
+Each sub-project also has a `build.sh` that stages its WASM into `web/pkg/`.
+Build it, then serve `web/` over HTTP (WASM can't load from a `file://` URL):
 
 ```bash
 cd toon-render-webassembly     # or any other sub-project
 ./build.sh                     # cargo build + wasm-bindgen → web/pkg
-cd web
-python3 -m http.server 8000    # any static server works
+cd web && python3 -m http.server 8000
 ```
 
-Then open **http://localhost:8000/** in a browser.
-
-Playground pages by project:
-
-| Project | URL to open | What you'll see |
-|---------|-------------|-----------------|
-| `toon-render-webassembly` | `/` | Edit TOON → live HTML + preview, via one WASM module. Presets for the flat and json-render.dev forms. |
-| `toon-webassembly` | `/` | JSON ⇄ TOON converter. Also `/combo.html` — the original two-module TOON → JSON → HTML demo. |
-| `json-render-webassembly` | `/` | Edit a JSON UI spec + state → live HTML. |
-| `pug-webassembly` | `/` | Edit a Pug template → live HTML. |
-
-Stop the server with `Ctrl-C`. To try another project, `cd` into it, run its
-`build.sh`, and serve its `web/` folder the same way.
+Then open <http://localhost:8000/>.
+</details>
 
 ## Test
 
