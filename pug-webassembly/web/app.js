@@ -20,26 +20,33 @@ const allowScripts = $("allow-scripts");
 const stripScriptsEl = $("strip-scripts");
 const sizeEl = $("size");
 const pugCharsEl = $("pug-chars");
+const dataCharsEl = $("data-chars");
 const htmlCharsEl = $("html-chars");
-const deltaCharsEl = $("delta-chars");
-const deltaPctEl = $("delta-pct");
+const savedTplEl = $("saved-tpl");
+const savedFullEl = $("saved-full");
 
 const fmt = new Intl.NumberFormat();
-const signed = (n) => (n > 0 ? `+${fmt.format(n)}` : fmt.format(n));
+// % smaller `part` is than `whole` (positive ⇒ source is smaller than HTML).
+const pctSaved = (whole, part) => (whole > 0 ? ((whole - part) / whole) * 100 : 0);
+const signOf = (n) => (n > 0 ? "pos" : n < 0 ? "neg" : "zero");
 
-function updateStats(pug, html) {
+function updateStats(pug, data, html) {
   const p = pug.length;
+  const d = data.length;
   const h = html.length;
-  const diff = h - p;            // positive ⇒ HTML is bigger than pug
-  // "% saved" = how much shorter pug is vs the equivalent HTML.
-  // 0% when they're equal, 100% when html is much bigger than pug.
-  const pct = h > 0 ? (diff / h) * 100 : 0;
+  // Two comparisons, since fairness depends on the scenario:
+  //  • template only  — the template is reused across many renders and the
+  //    data arrives from a separate call / local stack (template amortized).
+  //  • template + data — a single self-contained render pays for both.
+  const savedTpl = pctSaved(h, p);
+  const savedFull = pctSaved(h, p + d);
   pugCharsEl.textContent = fmt.format(p);
+  dataCharsEl.textContent = fmt.format(d);
   htmlCharsEl.textContent = fmt.format(h);
-  deltaCharsEl.textContent = signed(diff);
-  deltaPctEl.textContent = `${pct.toFixed(1)}%`;
-  deltaCharsEl.parentElement.dataset.sign = diff > 0 ? "pos" : diff < 0 ? "neg" : "zero";
-  deltaPctEl.parentElement.dataset.sign = diff > 0 ? "pos" : diff < 0 ? "neg" : "zero";
+  savedTplEl.textContent = `${savedTpl.toFixed(1)}%`;
+  savedFullEl.textContent = `${savedFull.toFixed(1)}%`;
+  savedTplEl.parentElement.dataset.sign = signOf(savedTpl);
+  savedFullEl.parentElement.dataset.sign = signOf(savedFull);
 }
 
 /**
@@ -95,7 +102,7 @@ function showError(msg) {
   errEl.hidden = false;
   errEl.textContent = msg;
   preview.srcdoc = "";
-  updateStats(srcEl.value, "");
+  updateStats(srcEl.value, dataEl.value, "");
 }
 
 function render() {
@@ -107,7 +114,7 @@ function render() {
     outEl.textContent = html;
     errEl.hidden = true;
     errEl.textContent = "";
-    updateStats(srcEl.value, html);
+    updateStats(srcEl.value, dataEl.value, html);
 
     // Default-safe: empty sandbox attribute blocks scripts entirely.
     preview.setAttribute(

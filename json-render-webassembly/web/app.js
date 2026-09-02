@@ -20,23 +20,36 @@ const allowScripts = $("allow-scripts");
 const stripScriptsEl = $("strip-scripts");
 const sizeEl = $("size");
 const specCharsEl = $("spec-chars");
+const stateCharsEl = $("state-chars");
 const htmlCharsEl = $("html-chars");
-const deltaCharsEl = $("delta-chars");
+const savedTplEl = $("saved-tpl");
+const savedFullEl = $("saved-full");
 const promptEl = $("prompt");
 const endpointEl = $("endpoint");
 const genBtn = $("gen-btn");
 
 const fmt = new Intl.NumberFormat();
-const signed = (n) => (n > 0 ? `+${fmt.format(n)}` : fmt.format(n));
+// % smaller `part` is than `whole` (positive ⇒ source is smaller than HTML).
+const pctSaved = (whole, part) => (whole > 0 ? ((whole - part) / whole) * 100 : 0);
+const signOf = (n) => (n > 0 ? "pos" : n < 0 ? "neg" : "zero");
 
-function updateStats(spec, html) {
+function updateStats(spec, state, html) {
   const s = spec.length;
+  const st = state.length;
   const h = html.length;
-  const diff = h - s;
+  // Two comparisons, since fairness depends on the scenario:
+  //  • spec only    — the spec is reused across renders and the state
+  //    arrives from a separate call / local stack (spec amortized).
+  //  • spec + state — a single self-contained render pays for both.
+  const savedTpl = pctSaved(h, s);
+  const savedFull = pctSaved(h, s + st);
   specCharsEl.textContent = fmt.format(s);
+  stateCharsEl.textContent = fmt.format(st);
   htmlCharsEl.textContent = fmt.format(h);
-  deltaCharsEl.textContent = signed(diff);
-  deltaCharsEl.parentElement.dataset.sign = diff > 0 ? "pos" : diff < 0 ? "neg" : "zero";
+  savedTplEl.textContent = `${savedTpl.toFixed(1)}%`;
+  savedFullEl.textContent = `${savedFull.toFixed(1)}%`;
+  savedTplEl.parentElement.dataset.sign = signOf(savedTpl);
+  savedFullEl.parentElement.dataset.sign = signOf(savedFull);
 }
 
 /**
@@ -108,7 +121,7 @@ function showError(msg) {
   errEl.hidden = false;
   errEl.textContent = msg;
   preview.srcdoc = "";
-  updateStats(specEl.value, "");
+  updateStats(specEl.value, stateEl.value, "");
 }
 
 function render() {
@@ -119,7 +132,7 @@ function render() {
     outEl.textContent = html;
     errEl.hidden = true;
     errEl.textContent = "";
-    updateStats(specEl.value, html);
+    updateStats(specEl.value, stateEl.value, html);
     preview.setAttribute(
       "sandbox",
       allowScripts.checked ? "allow-scripts" : ""

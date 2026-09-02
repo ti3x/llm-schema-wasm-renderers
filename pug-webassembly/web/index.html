@@ -26,27 +26,34 @@
   <main>
     <section class="pane">
       <label for="src">Pug source</label>
-      <textarea id="src" spellcheck="false">doctype html
-html
-  head
-    title= title
-  body
-    h1.greeting Hello, #{name}!
-    ul
-      each item, i in items
-        li(class=(i === 0 ? "first" : "")) #{i + 1}. #{item.toUpperCase()}
-    if items.length > 2
-      p.note You have many items.
-    else
-      p.note Not many items.</textarea>
+      <textarea id="src" spellcheck="false">h1.title #{title} (#{members.length} people)
+section.roster
+  each m, i in members
+    article(class=(i === 0 ? "card lead" : "card"))
+      h3.name= m.name
+      p.role Role: #{m.role}
+      p.loc Location: #{m.location}
+      button.msg(type="button") Message #{m.name}</textarea>
     </section>
 
     <section class="pane">
       <label for="data">Locals (JSON)</label>
       <textarea id="data" spellcheck="false">{
-  "title": "Demo",
-  "name": "World",
-  "items": ["apples", "oranges", "pears"]
+  "title": "Team roster",
+  "members": [
+    { "name": "Ada Lovelace",  "role": "Engineer",       "location": "London" },
+    { "name": "Alan Turing",   "role": "Cryptographer",  "location": "Manchester" },
+    { "name": "Grace Hopper",  "role": "Rear Admiral",   "location": "New York" },
+    { "name": "Katherine J.",  "role": "Mathematician",  "location": "Hampton" },
+    { "name": "Edsger D.",     "role": "Researcher",     "location": "Eindhoven" },
+    { "name": "Barbara L.",    "role": "Geneticist",     "location": "Cold Spring" },
+    { "name": "Tim B-L.",      "role": "Inventor",       "location": "Geneva" },
+    { "name": "Vint Cerf",     "role": "Architect",      "location": "Los Angeles" },
+    { "name": "Radia P.",      "role": "Engineer",       "location": "Boston" },
+    { "name": "Margaret H.",   "role": "Director",       "location": "Cambridge" },
+    { "name": "Dennis R.",     "role": "Engineer",       "location": "Murray Hill" },
+    { "name": "Ken Thompson",  "role": "Engineer",       "location": "Murray Hill" }
+  ]
 }</textarea>
     </section>
 
@@ -55,9 +62,10 @@ html
         <label>HTML output</label>
         <div class="stats" id="stats" aria-live="polite">
           <span><b id="pug-chars">0</b> pug</span>
+          <span><b id="data-chars">0</b> json</span>
           <span><b id="html-chars">0</b> html</span>
-          <span class="delta"><b id="delta-chars">0</b> diff</span>
-          <span class="delta"><b id="delta-pct">0%</b> saved</span>
+          <span class="delta" title="How much smaller the template alone is than the HTML — fair when the template is reused and data comes from a separate call."><b id="saved-tpl">0%</b> saved · template</span>
+          <span class="delta" title="How much smaller template + data together are than the HTML — fair for a single self-contained render."><b id="saved-full">0%</b> saved · +data</span>
         </div>
       </div>
       <pre id="out"></pre>

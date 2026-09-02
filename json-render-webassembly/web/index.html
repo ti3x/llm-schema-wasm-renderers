@@ -43,22 +43,22 @@
       <label for="spec">UI spec (JSON)</label>
       <textarea id="spec" spellcheck="false">{
   "tag": "Card",
-  "props": { "title": "Users" },
+  "props": { "title": "Team directory" },
   "children": [
     {
-      "tag": "Heading",
-      "props": { "level": 2, "value": "Active members" }
-    },
-    {
       "tag": "List",
-      "props": { "items": "$bindState.users" },
+      "props": { "items": "$bindState.members" },
       "children": [
-        { "tag": "Text", "props": { "value": "$item.name" } }
+        {
+          "tag": "Card",
+          "children": [
+            { "tag": "Heading", "props": { "level": 3, "value": "$item.name" } },
+            { "tag": "Text", "props": { "value": "$item.role" } },
+            { "tag": "Text", "props": { "value": "$item.location" } },
+            { "tag": "Button", "props": { "label": "Message", "variant": "primary" } }
+          ]
+        }
       ]
-    },
-    {
-      "tag": "Button",
-      "props": { "label": "Invite", "variant": "primary" }
     }
   ]
 }</textarea>
@@ -67,10 +67,15 @@
     <section class="pane">
       <label for="state">State (JSON)</label>
       <textarea id="state" spellcheck="false">{
-  "users": [
-    { "name": "Ada Lovelace" },
-    { "name": "Alan Turing" },
-    { "name": "Grace Hopper" }
+  "members": [
+    { "name": "Ada Lovelace", "role": "Engineer",      "location": "London" },
+    { "name": "Alan Turing",  "role": "Cryptographer", "location": "Manchester" },
+    { "name": "Grace Hopper", "role": "Rear Admiral",  "location": "New York" },
+    { "name": "Katherine J.", "role": "Mathematician", "location": "Hampton" },
+    { "name": "Edsger D.",    "role": "Researcher",    "location": "Eindhoven" },
+    { "name": "Barbara L.",   "role": "Geneticist",    "location": "Cold Spring" },
+    { "name": "Tim B-L.",     "role": "Inventor",      "location": "Geneva" },
+    { "name": "Vint Cerf",    "role": "Architect",     "location": "Los Angeles" }
   ]
 }</textarea>
     </section>
@@ -80,8 +85,10 @@
         <label>HTML output</label>
         <div class="stats" id="stats" aria-live="polite">
           <span><b id="spec-chars">0</b> spec</span>
+          <span><b id="state-chars">0</b> state</span>
           <span><b id="html-chars">0</b> html</span>
-          <span class="delta"><b id="delta-chars">0</b> diff</span>
+          <span class="delta" title="How much smaller the spec alone is than the HTML — fair when the spec is reused and state comes from a separate call."><b id="saved-tpl">0%</b> saved · spec</span>
+          <span class="delta" title="How much smaller spec + state together are than the HTML — fair for a single self-contained render."><b id="saved-full">0%</b> saved · spec+state</span>
         </div>
       </div>
       <pre id="out"></pre>
