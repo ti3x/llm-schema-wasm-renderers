@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+    Strict CSP: page runs no inline JS; WASM loaded as a module from
+    same-origin. No remote scripts, styles, or fetches.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline';" />
+  <title>json ⇄ toon · WebAssembly playground</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>json ⇄ toon</h1>
+    <p class="sub">
+      Bidirectional <a href="https://github.com/toon-format/toon" rel="noopener">TOON</a>
+      ↔ JSON converter compiled to WebAssembly. Edit either pane — the
+      other re-encodes live. Built on top of <code>toon-format</code> v0.4.
+      <a href="./combo.html" rel="noopener">→ combo demo: TOON → JSON → HTML cost comparison</a>
+    </p>
+  </header>
+
+  <section class="settings">
+    <fieldset>
+      <legend>Delimiter</legend>
+      <label><input type="radio" name="delimiter" value="comma" checked /> Comma <code>,</code></label>
+      <label><input type="radio" name="delimiter" value="tab" /> Tab</label>
+      <label><input type="radio" name="delimiter" value="pipe" /> Pipe <code>|</code></label>
+    </fieldset>
+    <fieldset>
+      <legend>Indent</legend>
+      <label>Spaces <input type="number" id="indent" min="0" max="8" value="2" /></label>
+    </fieldset>
+    <fieldset>
+      <legend>Decode</legend>
+      <label><input type="checkbox" id="strict" checked /> Strict</label>
+      <label><input type="checkbox" id="coerce" checked /> Coerce types</label>
+      <label><input type="checkbox" id="expand-paths" /> Expand paths</label>
+    </fieldset>
+    <fieldset>
+      <legend>Encode</legend>
+      <label><input type="checkbox" id="key-folding" /> Key folding</label>
+    </fieldset>
+  </section>
+
+  <main>
+    <section class="pane">
+      <div class="pane-head">
+        <label for="json-pane">JSON</label>
+        <div class="pane-stats" id="json-stats" aria-live="polite">
+          <span><b id="json-chars">0</b> chars</span>
+          <span><b id="json-tokens">0</b> ≈tokens</span>
+        </div>
+      </div>
+      <textarea id="json-pane" spellcheck="false">{
+  "users": [
+    { "id": 1, "name": "Ada Lovelace",   "role": "admin" },
+    { "id": 2, "name": "Alan Turing",    "role": "user"  },
+    { "id": 3, "name": "Grace Hopper",   "role": "user"  }
+  ],
+  "active": true,
+  "version": "1.5.0"
+}</textarea>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label for="toon-pane">TOON</label>
+        <div class="pane-stats" id="toon-stats" aria-live="polite">
+          <span><b id="toon-chars">0</b> chars</span>
+          <span><b id="toon-tokens">0</b> ≈tokens</span>
+          <span class="savings"><b id="savings">0%</b> saved</span>
+        </div>
+      </div>
+      <textarea id="toon-pane" spellcheck="false"></textarea>
+    </section>
+  </main>
+
+  <p id="err" class="err" hidden></p>
+
+  <footer>
+    <p>
+      Built with <a href="https://www.rust-lang.org/" rel="noopener">Rust</a>
+      + <a href="https://webassembly.org/" rel="noopener">WebAssembly</a>
+      + <a href="https://crates.io/crates/toon-format" rel="noopener">toon-format</a>.
+      Token count is an approximation (<code>ceil(chars/4)</code>).
+      <span class="size" id="size"></span>
+    </p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

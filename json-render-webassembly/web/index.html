@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+    Strict CSP: the page itself runs no inline JS; WASM is loaded as a
+    module from same-origin. The "Generate from prompt" feature sends a
+    fetch to a user-configured LLM endpoint — connect-src is widened to
+    allow that, but script-src remains same-origin only.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-src 'self'; connect-src *;" />
+  <title>json → ui · WebAssembly playground</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>json → ui</h1>
+    <p class="sub">
+      Restricted-catalog JSON-UI renderer compiled to WebAssembly.
+      No JavaScript engine embedded. No <code>eval</code>.
+      Specs you paste cannot execute code in this page.
+    </p>
+  </header>
+
+  <section class="generate">
+    <label for="prompt">Generate spec from prompt</label>
+    <div class="gen-row">
+      <input id="prompt" type="text" placeholder="e.g. a card showing a list of users with name and email" />
+      <input id="endpoint" type="text" placeholder="LLM endpoint URL (optional)" />
+      <button id="gen-btn" type="button">Generate</button>
+    </div>
+    <p class="hint">
+      The "Generate" button POSTs <code>{prompt}</code> to your endpoint and
+      expects a JSON response with a <code>spec</code> field (object) to
+      append to the editor. No model is bundled into the WASM binary.
+    </p>
+  </section>
+
+  <main>
+    <section class="pane">
+      <label for="spec">UI spec (JSON)</label>
+      <textarea id="spec" spellcheck="false">{
+  "tag": "Card",
+  "props": { "title": "Users" },
+  "children": [
+    {
+      "tag": "Heading",
+      "props": { "level": 2, "value": "Active members" }
+    },
+    {
+      "tag": "List",
+      "props": { "items": "$bindState.users" },
+      "children": [
+        { "tag": "Text", "props": { "value": "$item.name" } }
+      ]
+    },
+    {
+      "tag": "Button",
+      "props": { "label": "Invite", "variant": "primary" }
+    }
+  ]
+}</textarea>
+    </section>
+
+    <section class="pane">
+      <label for="state">State (JSON)</label>
+      <textarea id="state" spellcheck="false">{
+  "users": [
+    { "name": "Ada Lovelace" },
+    { "name": "Alan Turing" },
+    { "name": "Grace Hopper" }
+  ]
+}</textarea>
+    </section>
+
+    <section class="pane wide">
+      <div class="out-head">
+        <label>HTML output</label>
+        <div class="stats" id="stats" aria-live="polite">
+          <span><b id="spec-chars">0</b> spec</span>
+          <span><b id="html-chars">0</b> html</span>
+          <span class="delta"><b id="delta-chars">0</b> diff</span>
+        </div>
+      </div>
+      <pre id="out"></pre>
+      <p id="err" class="err" hidden></p>
+    </section>
+
+    <section class="pane wide">
+      <div class="preview-head">
+        <label>Preview</label>
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" id="strip-scripts" checked />
+            Strip <code>&lt;script&gt;</code> + event handlers
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="allow-scripts" />
+            Allow scripts in preview iframe
+          </label>
+        </div>
+      </div>
+      <iframe id="preview" sandbox title="Rendered HTML preview"></iframe>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Built with <a href="https://www.rust-lang.org/" rel="noopener">Rust</a>
+      + <a href="https://webassembly.org/" rel="noopener">WebAssembly</a>.
+      <span class="size" id="size"></span>
+    </p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

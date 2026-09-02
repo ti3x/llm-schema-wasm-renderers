@@ -1,0 +1,22 @@
+[package]
+name = "toon-wasm"
+version = "0.1.0"
+edition = "2021"
+description = "Bidirectional JSON ⇄ TOON conversion compiled to WebAssembly"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+# toon-format ships a heavy CLI in its default features (clap, ratatui,
+# tiktoken-rs, syntect, …) — disable to keep the WASM binary small.
+toon-format = { version = "0.4", default-features = false }
+wasm-bindgen = { version = "0.2", optional = true }
+
+[features]
+default = []
+wasm = ["wasm-bindgen"]

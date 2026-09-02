@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-src 'self';" />
+  <title>pug → html · cost comparison</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="combo.css" />
+</head>
+<body>
+  <header>
+    <h1>pug → html</h1>
+    <p class="sub">
+      Pick a module from the dropdown to see how a Pug template + locals
+      JSON compiles to HTML, and how many characters / tokens you save
+      by authoring in Pug versus the full markup. Both panes are editable.
+      <a href="./index.html" rel="noopener">← back to the plain pug demo</a>
+    </p>
+    <div class="preset-row">
+      <label for="preset">Module:</label>
+      <select id="preset">
+        <option value="greetings">Greetings (loop + conditional)</option>
+        <option value="article">Article card (interpolation + classes)</option>
+        <option value="dashboard">Dashboard table (each loop over rows)</option>
+        <option value="team-perf">Team Performance (parallel of json-render.dev)</option>
+        <option value="shopping">Shopping Item (parallel of json-render.dev)</option>
+        <option value="email">Transactional email (nested layout)</option>
+      </select>
+      <span class="preset-note" id="preset-note"></span>
+    </div>
+  </header>
+
+  <section class="costbar" id="costbar">
+    <div class="stage stage-pug">
+      <div class="stage-label">PUG</div>
+      <div class="stage-num"><b id="c-pug">0</b><span class="unit">chars</span></div>
+      <div class="stage-num"><b id="t-pug">0</b><span class="unit">≈tokens</span></div>
+    </div>
+    <div class="arrow" id="arrow-pug-html"><span class="ratio" id="r-pug-html">—</span></div>
+    <div class="stage stage-html">
+      <div class="stage-label">HTML</div>
+      <div class="stage-num"><b id="c-html">0</b><span class="unit">chars</span></div>
+      <div class="stage-num"><b id="t-html">0</b><span class="unit">≈tokens</span></div>
+    </div>
+  </section>
+
+  <main class="combo-grid">
+    <section class="pane">
+      <div class="pane-head">
+        <label for="pug-pane">Pug source</label>
+        <span class="hint">edit me</span>
+      </div>
+      <textarea id="pug-pane" spellcheck="false"></textarea>
+      <p class="err" id="err-pug" hidden></p>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label for="html-pane">HTML (rendered)</label>
+        <span class="hint">read-only</span>
+      </div>
+      <pre id="html-pane"></pre>
+      <p class="err" id="err-html" hidden></p>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label for="locals-pane">Locals (JSON)</label>
+        <span class="hint">also editable</span>
+      </div>
+      <textarea id="locals-pane" spellcheck="false"></textarea>
+      <p class="err" id="err-locals" hidden></p>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label>Preview</label>
+        <span class="hint">sandboxed iframe</span>
+      </div>
+      <iframe id="preview" sandbox title="Rendered HTML preview"></iframe>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Chain: <b>pug-wasm</b> compiles the Pug source against the locals JSON
+      to produce HTML, sanitized and rendered in a sandboxed iframe.
+      Token count is <code>ceil(chars/4)</code>, approximate.
+      <span class="size" id="size"></span>
+    </p>
+  </footer>
+
+  <script type="module" src="combo.js"></script>
+</body>
+</html>

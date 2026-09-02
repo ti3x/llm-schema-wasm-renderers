@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+    Strict CSP: the page itself runs no inline JS; WASM is loaded as a
+    module from same-origin. No remote scripts, styles, or fetches.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-src 'self';" />
+  <title>pug → html · WebAssembly playground</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>pug → html</h1>
+    <p class="sub">
+      Restricted-expression pug renderer compiled to WebAssembly.
+      No JavaScript engine embedded. No <code>eval</code>.
+      Template source you paste cannot execute code in this page.
+      <a href="./combo.html" rel="noopener" style="color: var(--accent);">→ combo demo: pug → html cost comparison across preset modules</a>
+    </p>
+  </header>
+
+  <main>
+    <section class="pane">
+      <label for="src">Pug source</label>
+      <textarea id="src" spellcheck="false">doctype html
+html
+  head
+    title= title
+  body
+    h1.greeting Hello, #{name}!
+    ul
+      each item, i in items
+        li(class=(i === 0 ? "first" : "")) #{i + 1}. #{item.toUpperCase()}
+    if items.length > 2
+      p.note You have many items.
+    else
+      p.note Not many items.</textarea>
+    </section>
+
+    <section class="pane">
+      <label for="data">Locals (JSON)</label>
+      <textarea id="data" spellcheck="false">{
+  "title": "Demo",
+  "name": "World",
+  "items": ["apples", "oranges", "pears"]
+}</textarea>
+    </section>
+
+    <section class="pane wide">
+      <div class="out-head">
+        <label>HTML output</label>
+        <div class="stats" id="stats" aria-live="polite">
+          <span><b id="pug-chars">0</b> pug</span>
+          <span><b id="html-chars">0</b> html</span>
+          <span class="delta"><b id="delta-chars">0</b> diff</span>
+          <span class="delta"><b id="delta-pct">0%</b> saved</span>
+        </div>
+      </div>
+      <pre id="out"></pre>
+      <p id="err" class="err" hidden></p>
+    </section>
+
+    <section class="pane wide">
+      <div class="preview-head">
+        <label>Preview</label>
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" id="strip-scripts" checked />
+            Strip <code>&lt;script&gt;</code> + event handlers
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="allow-scripts" />
+            Allow scripts in preview iframe
+          </label>
+        </div>
+      </div>
+      <iframe id="preview" sandbox title="Rendered HTML preview"></iframe>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Built with <a href="https://www.rust-lang.org/" rel="noopener">Rust</a>
+      + <a href="https://webassembly.org/" rel="noopener">WebAssembly</a>.
+      <span class="size" id="size"></span>
+    </p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

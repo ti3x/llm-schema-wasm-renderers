@@ -1,0 +1,19 @@
+[package]
+name = "json-render-wasm"
+version = "0.1.0"
+edition = "2021"
+description = "Pure-Rust JSON-UI-spec → HTML renderer with restricted binding expressions, compiled to WebAssembly"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+wasm-bindgen = { version = "0.2", optional = true }
+
+[features]
+default = []
+wasm = ["wasm-bindgen"]

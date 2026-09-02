@@ -1,0 +1,168 @@
+/* combo.css — overlays on top of style.css to add preset row, cost bar,
+   and the 2×2 pane grid used by combo.html. */
+
+.preset-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 1.5rem 0;
+  font-size: 0.85rem;
+}
+.preset-row label { font-weight: 600; color: var(--fg); }
+.preset-row select {
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--fg);
+}
+.preset-note {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* Cost-comparison bar */
+
+.costbar {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0.75rem 1.5rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.stage {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.stage-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.stage-num { font: 0.85rem ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+.stage-num b { font-weight: 700; color: var(--fg); }
+.stage-num .unit { color: var(--muted); margin-left: 0.25rem; font-size: 0.7rem; }
+
+.stage-pug { border-color: #16a34a55; background: #16a34a18; }
+.stage-html { border-color: var(--accent); }
+
+.arrow {
+  flex: 0 0 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.arrow::before {
+  content: "→";
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.arrow .ratio { margin-top: 0.15rem; white-space: nowrap; }
+.arrow .ratio[data-sign="saves"] { color: #4ade80; font-weight: 600; }
+.arrow .ratio[data-sign="grows"] { color: var(--err); font-weight: 600; }
+
+/* 2×2 grid */
+
+.combo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem 1.5rem;
+}
+
+.pane {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+}
+.pane-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+.pane label { font-weight: 600; font-size: 0.85rem; color: var(--fg); }
+.hint { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+
+.pane textarea {
+  flex: 1;
+  resize: vertical;
+  font: 0.8rem/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  background: var(--panel-2);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  min-height: 200px;
+  tab-size: 2;
+  white-space: pre;
+}
+
+#html-pane {
+  flex: 1;
+  margin: 0;
+  font: 0.75rem/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  background: var(--panel-2);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: auto;
+  min-height: 200px;
+}
+
+#preview {
+  flex: 1;
+  width: 100%;
+  min-height: 200px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.err {
+  margin: 0.4rem 0 0;
+  padding: 0.35rem 0.5rem;
+  background: rgba(255, 124, 124, 0.08);
+  border: 1px solid var(--err);
+  border-radius: 6px;
+  color: var(--err);
+  font: 0.75rem ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+}
+
+footer { padding: 0.75rem 1.5rem; font-size: 0.78rem; color: var(--muted); border-top: 1px solid var(--border); }
+footer code { background: var(--panel-2); padding: 0 4px; border-radius: 3px; }
+.size { margin-left: 0.5rem; }
+
+@media (max-width: 900px) {
+  .combo-grid { grid-template-columns: 1fr; }
+  .costbar { flex-direction: column; }
+  .arrow { flex: 0 0 32px; flex-direction: row; gap: 0.5rem; padding: 0.15rem 0; }
+  .arrow::before { content: "↓"; }
+}

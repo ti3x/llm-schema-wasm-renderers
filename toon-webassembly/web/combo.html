@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-src 'self';" />
+  <title>toon → json → html · cost comparison</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="combo.css" />
+</head>
+<body>
+  <header>
+    <h1>toon → json → html</h1>
+    <p class="sub">
+      Edit either the TOON or the JSON pane — the other is regenerated, and
+      the JSON is then fed through <a href="../json-render-webassembly/" rel="noopener">json-render-webassembly</a>
+      to produce HTML. The cost strip compares characters at each stage.
+      <a href="./index.html" rel="noopener">← back to the plain JSON ⇄ TOON demo</a>
+    </p>
+    <div class="preset-row">
+      <label for="preset">Module:</label>
+      <select id="preset">
+        <option value="dashboard">Team Performance (json-render.dev example)</option>
+        <option value="shopping">Shopping Item (json-render.dev example)</option>
+        <option value="table">Active Members (simple format)</option>
+      </select>
+      <span class="preset-note" id="preset-note"></span>
+    </div>
+  </header>
+
+  <section class="costbar" id="costbar">
+    <div class="stage stage-toon">
+      <div class="stage-label">TOON</div>
+      <div class="stage-num"><b id="c-toon">0</b><span class="unit">chars</span></div>
+      <div class="stage-num"><b id="t-toon">0</b><span class="unit">≈tokens</span></div>
+    </div>
+    <div class="arrow" id="arrow-toon-json"><span class="ratio" id="r-toon-json">—</span></div>
+    <div class="stage stage-json">
+      <div class="stage-label">JSON</div>
+      <div class="stage-num"><b id="c-json">0</b><span class="unit">chars</span></div>
+      <div class="stage-num"><b id="t-json">0</b><span class="unit">≈tokens</span></div>
+    </div>
+    <div class="arrow" id="arrow-json-html"><span class="ratio" id="r-json-html">—</span></div>
+    <div class="stage stage-html">
+      <div class="stage-label">HTML</div>
+      <div class="stage-num"><b id="c-html">0</b><span class="unit">chars</span></div>
+      <div class="stage-num"><b id="t-html">0</b><span class="unit">≈tokens</span></div>
+    </div>
+  </section>
+
+  <main class="combo-grid">
+    <section class="pane">
+      <div class="pane-head">
+        <label for="toon-pane">TOON (UI spec)</label>
+        <span class="hint">edit me</span>
+      </div>
+      <textarea id="toon-pane" spellcheck="false"></textarea>
+      <p class="err" id="err-toon" hidden></p>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label for="json-pane">JSON (intermediate)</label>
+        <span class="hint">also editable</span>
+      </div>
+      <textarea id="json-pane" spellcheck="false"></textarea>
+      <p class="err" id="err-json" hidden></p>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label for="html-pane">Rendered HTML (source)</label>
+        <span class="hint">read-only</span>
+      </div>
+      <pre id="html-pane"></pre>
+      <p class="err" id="err-html" hidden></p>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <label>Preview</label>
+        <span class="hint">sandboxed iframe</span>
+      </div>
+      <iframe id="preview" sandbox title="Rendered HTML preview"></iframe>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      The chain: <b>toon-wasm</b> (TOON ⇄ JSON, ~234 KB) →
+      <b>json-render-wasm</b> (JSON → HTML, ~143 KB).
+      Token count is <code>ceil(chars/4)</code>, approximate.
+    </p>
+  </footer>
+
+  <script type="module" src="combo.js"></script>
+</body>
+</html>
