@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+    Strict CSP: page runs no inline JS; WASM loaded as a module from
+    same-origin. The rendered HTML goes into a sandboxed iframe.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline';" />
+  <title>toon → html · WebAssembly playground</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>toon → html</h1>
+    <p class="sub">
+      An LLM emits a UI spec as
+      <a href="https://github.com/toon-format/toon" rel="noopener">TOON</a>;
+      one WebAssembly module decodes it to a JSON UI spec, adapts the
+      <a href="https://json-render.dev/" rel="noopener">json-render.dev</a>
+      form (resolving <code>$state</code>/<code>$template</code> bindings),
+      and renders safe HTML — <strong>no JS glue between two modules</strong>.
+    </p>
+    <div class="controls">
+      <label for="preset">Preset</label>
+      <select id="preset">
+        <option value="dev">Dashboard · json-render.dev form + bindings</option>
+        <option value="flat">Plain card · flat form, no bindings</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <section class="pane">
+      <h2>TOON <span class="stat" id="stat-toon"></span></h2>
+      <textarea id="toon" spellcheck="false" autocomplete="off"></textarea>
+      <p class="err" id="err" hidden></p>
+    </section>
+
+    <section class="pane">
+      <h2>HTML <span class="stat" id="stat-html"></span></h2>
+      <textarea id="html" spellcheck="false" readonly></textarea>
+    </section>
+
+    <section class="pane">
+      <h2>Preview</h2>
+      <iframe id="preview" sandbox="allow-same-origin" title="rendered preview"></iframe>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

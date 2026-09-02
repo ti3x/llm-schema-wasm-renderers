@@ -1,0 +1,22 @@
+[package]
+name = "toon-render-wasm"
+version = "0.1.0"
+edition = "2021"
+description = "Single-module TOON → JSON UI spec → HTML renderer, compiled to WebAssembly"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Reuse the sibling crates for the heavy lifting — this crate only adds
+# the spec adapter that stitches them together.
+toon-wasm = { path = "../../toon-webassembly/toon-wasm" }
+json-render-wasm = { path = "../../json-render-webassembly/json-render-wasm" }
+serde_json = "1"
+thiserror = "1"
+wasm-bindgen = { version = "0.2", optional = true }
+
+[features]
+default = []
+wasm = ["wasm-bindgen"]

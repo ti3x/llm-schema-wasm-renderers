@@ -1,0 +1,81 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --border: #262b36;
+  --fg: #e6e8ee;
+  --muted: #8b93a7;
+  --accent: #7aa2f7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+header {
+  padding: 20px 24px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 { margin: 0 0 4px; font-size: 20px; }
+
+.sub { margin: 0 0 12px; color: var(--muted); max-width: 70ch; }
+.sub a { color: var(--accent); }
+.sub code {
+  background: #222634; padding: 1px 5px; border-radius: 4px; font-size: 12px;
+}
+
+.controls { display: flex; align-items: center; gap: 8px; }
+.controls label { color: var(--muted); }
+select {
+  background: var(--panel); color: var(--fg);
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  height: calc(100vh - 130px);
+}
+
+.pane { display: flex; flex-direction: column; min-height: 0; }
+
+.pane h2 {
+  margin: 0 0 8px; font-size: 13px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+}
+
+.stat { font-weight: 400; text-transform: none; letter-spacing: 0; color: #5c6473; }
+
+textarea, iframe {
+  flex: 1; min-height: 0; width: 100%;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel);
+}
+
+textarea {
+  color: var(--fg); padding: 12px; resize: none;
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  tab-size: 2;
+}
+textarea:focus { outline: 1px solid var(--accent); }
+textarea[readonly] { color: #b8c0d0; }
+
+iframe { background: #fff; }
+
+.err {
+  margin: 8px 0 0; padding: 8px 10px;
+  background: #2a1618; border: 1px solid #5c2a2f; border-radius: 6px;
+  color: #ff9aa2; font: 12px/1.4 ui-monospace, monospace; white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr; height: auto; }
+  textarea, iframe { min-height: 220px; }
+}
